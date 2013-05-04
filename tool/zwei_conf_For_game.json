@@ -1,0 +1,10 @@
+{
+    "ゲハ":{
+              "keywords":["速報","PS4"],
+              "url":"http://anago.2ch.net/ghard/"
+              },
+    "嫌儲":{
+               "keywords":["任天堂","SONY","ソニー","PS","Wii","DS"],
+               "url":"http://engawa.2ch.net/poverty/"
+           }
+ }

@@ -1,0 +1,20 @@
+bin/*
+conf/*
+
+*.class
+*~
+*.bak
+*.off
+*.old
+.DS_Store
+
+
+# Eclipse
+.classpath
+.project
+.settings
+
+#Other
+sbs_conf.json
+subjectText/*
+sutemaBurstStream_Queue.sqlite

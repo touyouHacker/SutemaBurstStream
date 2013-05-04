@@ -1,0 +1,14 @@
+{
+    "ラノベ":{
+              "keywords":["伏見","電撃"],
+              "url":"http://toro.2ch.net/magazin/"
+              },
+    "嫌儲":{
+               "keywords":["ラノベ","妹","来期","今期","DVD"],
+               "url":"http://engawa.2ch.net/poverty/"
+           },
+     "アニメ":{
+                "keywords":["俺の妹"],
+                "url":"http://toro.2ch.net/anime/"
+              }
+ }
