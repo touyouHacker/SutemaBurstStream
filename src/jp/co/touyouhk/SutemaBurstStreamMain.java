@@ -154,6 +154,8 @@ public class SutemaBurstStreamMain {
 
 			if (match) {
 
+				try {
+
 				if (!dao.findById(Integer.valueOf(subjectTextEntity.getThreadNumber()))) {
 
 					dao.regist(Integer.valueOf(subjectTextEntity.getThreadNumber()),
@@ -162,6 +164,10 @@ public class SutemaBurstStreamMain {
 					mailString += "[" + zweiConf.getItaName() +"]" + " " + title + " /key= " +
 							matchKeyWord + System.getProperty("line.separator") + "====================" +
 								 System.getProperty("line.separator");
+					}
+				} catch (Exception e) {
+					// キーワードがスレ番号が異常なものに引っかかる場合（9から始まるものとか）
+					System.out.println(e);
 				}
 			}
 		}
