@@ -18,7 +18,7 @@ SutemaBurstStream (SBS) ステマ バースト ストリーム
 
 
 #配布先
-http://d.hatena.ne.jp/thk/
+http://d.hatena.ne.jp/thk/20130505
 公式サイトはそのうち作ります
 
 #動作に必要なもの
