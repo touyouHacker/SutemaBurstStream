@@ -1,0 +1,12 @@
+{
+    "mail":{
+              "smtp_server":"smtp.googlemail.com",
+              "smtp_port":"465",
+              "smtp_ssl_flag":"true",
+              "user_name":"xxxxxxxx",
+              "password":"xxxxxxxx",
+              "src_mail_adress":"xxxx@gmail.com",
+              "dest_mail_adress":"xxxx@mobile.jp"
+              },
+     "loop_minute":"30"
+ }
