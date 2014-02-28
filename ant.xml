@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project sutemaBurstStream">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <target name="create_run_jar">
+        <jar destfile="S:/mycodes/sutemaBurstStreamBin/SutemaBurstStream01b/sbs.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="jp.co.touyouhk.SutemaBurstStreamMain"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="S:/mycodes/sutemaBurstStream/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="S:/mycodes/sutemaBurstStream/lib/commons-email-1.3.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="S:/mycodes/sutemaBurstStream/lib/jackson-all-1.9.11.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="S:/mycodes/sutemaBurstStream/lib/mail.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="S:/mycodes/sutemaBurstStream/lib/sqlite-jdbc-3.7.2.jar"/>
+        </jar>
+    </target>
+</project>

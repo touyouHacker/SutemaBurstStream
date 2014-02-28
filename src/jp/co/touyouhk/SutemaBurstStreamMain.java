@@ -92,14 +92,17 @@ public class SutemaBurstStreamMain {
 
 			for (ZweiConf zweiConf : zweiConfList) {
 				String result = execute(zweiConf);
-				if( result != ""){
+				if( result != "" && result != null){
 					mailLine += result;
 				}
 			}
 
 			//Mail送信
-			if(mailLine != "" && mailLine != null){
+			if(mailLine != ""){
+				System.out.println("メールを送信します。");
 				sendMail(mailConf, mailLine);
+			} else {
+				System.out.println("メールを送信しません。");
 			}
 
 			// ■スリープ
