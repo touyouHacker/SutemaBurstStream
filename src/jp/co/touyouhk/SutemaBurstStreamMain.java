@@ -98,7 +98,7 @@ public class SutemaBurstStreamMain {
 			}
 
 			//Mail送信
-			if(mailLine != ""){
+			if(mailLine != "" && mailLine != null){
 				sendMail(mailConf, mailLine);
 			}
 
