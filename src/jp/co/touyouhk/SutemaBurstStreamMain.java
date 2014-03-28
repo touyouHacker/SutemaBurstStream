@@ -54,9 +54,10 @@ public class SutemaBurstStreamMain {
 	 * @throws JsonMappingException
 	 * @throws JsonParseException
 	 * @throws EmailException
+	 * @throws InterruptedException
 	 */
 	public static void main(String[] args) throws ClassNotFoundException, JsonParseException, JsonMappingException,
-			IOException, EmailException {
+			IOException, EmailException, InterruptedException {
 
 		Class.forName("org.sqlite.JDBC");
 
@@ -84,11 +85,11 @@ public class SutemaBurstStreamMain {
 
 		//System.exit(0);
 
+
+		String mailLine = "";
 		while (true) {
 			loopConter++;
 			System.out.println("------------ ループ " + loopConter + "回目");
-
-			String mailLine = "";
 
 			for (ZweiConf zweiConf : zweiConfList) {
 				String result = execute(zweiConf);
@@ -100,7 +101,20 @@ public class SutemaBurstStreamMain {
 			//Mail送信
 			if(mailLine != ""){
 				System.out.println("メールを送信します。");
-				sendMail(mailConf, mailLine);
+
+				try {
+					sendMail(mailConf, mailLine);
+					mailLine = "";
+				} catch (EmailException e) {
+					// 一度だけリトライする
+					Thread.sleep(1000 * 30);
+					try {
+					sendMail(mailConf, mailLine);
+					mailLine = "";
+					} catch (EmailException ee) {
+						System.out.println("Eメール送信エラー" + ee.toString());
+					}
+				}
 			} else {
 				System.out.println("メールを送信しません。");
 			}
