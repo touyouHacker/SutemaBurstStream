@@ -85,7 +85,6 @@ public class SutemaBurstStreamMain {
 
 		//System.exit(0);
 
-
 		String mailLine = "";
 		while (true) {
 			loopConter++;
@@ -93,25 +92,25 @@ public class SutemaBurstStreamMain {
 
 			for (ZweiConf zweiConf : zweiConfList) {
 				String result = execute(zweiConf);
-				if( result != "" && result != null){
+				if (result != "" && result != null) {
 					mailLine += result;
 				}
 			}
 
 			//Mail送信
-			if(mailLine != ""){
+			if (mailLine != "") {
 				System.out.println("メールを送信します。");
 
 				try {
 					sendMail(mailConf, mailLine);
 					mailLine = "";
-				} catch (EmailException e) {
+				} catch (Exception e) {
 					// 一度だけリトライする
-					Thread.sleep(1000 * 30);
+					Thread.sleep(1000 * 60);
 					try {
-					sendMail(mailConf, mailLine);
-					mailLine = "";
-					} catch (EmailException ee) {
+						sendMail(mailConf, mailLine);
+						mailLine = "";
+					} catch (Exception ee) {
 						System.out.println("Eメール送信エラー" + ee.toString());
 					}
 				}
@@ -127,7 +126,7 @@ public class SutemaBurstStreamMain {
 
 	public static String execute(ZweiConf zweiConf) throws UnsupportedEncodingException {
 
-		String mailString="";
+		String mailString = "";
 
 		// TODO 毎回チェックするのは無駄なので処理をかえる
 		// ■subject.txt保存フォルダの生成
@@ -154,15 +153,14 @@ public class SutemaBurstStreamMain {
 
 		for (SubjectTextEntity subjectTextEntity : subjectTextEntities) {
 
-			String title = new String(subjectTextEntity.getTitle().getBytes("UTF-8"),"UTF-8");
+			String title = new String(subjectTextEntity.getTitle().getBytes("UTF-8"), "UTF-8");
 
 			//TODO キーワード検索
 			boolean match = false;
 			String matchKeyWord = null;
 
-
 			for (String keyword : zweiConf.getKeyWords()) {
-				if(title.indexOf(keyword) != -1){
+				if (title.indexOf(keyword) != -1) {
 					match = true;
 					matchKeyWord = keyword;
 					break;
@@ -173,14 +171,14 @@ public class SutemaBurstStreamMain {
 
 				try {
 
-				if (!dao.findById(Integer.valueOf(subjectTextEntity.getThreadNumber()))) {
+					if (!dao.findById(Integer.valueOf(subjectTextEntity.getThreadNumber()))) {
 
-					dao.regist(Integer.valueOf(subjectTextEntity.getThreadNumber()),
-							title, matchKeyWord);
+						dao.regist(Integer.valueOf(subjectTextEntity.getThreadNumber()),
+								title, matchKeyWord);
 
-					mailString += "[" + zweiConf.getItaName() +"]" + " " + title + " /key= " +
-							matchKeyWord + System.getProperty("line.separator") + "====================" +
-								 System.getProperty("line.separator");
+						mailString += "[" + zweiConf.getItaName() + "]" + " " + title + " /key= " +
+								matchKeyWord + System.getProperty("line.separator") + "====================" +
+								System.getProperty("line.separator");
 					}
 				} catch (Exception e) {
 					// キーワードがスレ番号が異常なものに引っかかる場合（9から始まるものとか）
@@ -194,27 +192,25 @@ public class SutemaBurstStreamMain {
 
 	}
 
-	public static void sendMail(MailConf mailConf, String mailLine) throws EmailException{
-			Email email = new SimpleEmail();
-			email.setHostName(mailConf.getSmtp_server());
-			email.setSmtpPort(mailConf.getSmtp_port());
-			email.setAuthenticator(new DefaultAuthenticator(mailConf.getUser_name(), mailConf.getPassword()));
-			email.setSSLOnConnect(mailConf.isSmtp_ssl_flag());
-			email.setFrom(mailConf.getSrc_mail_adress());
-			email.setSubject(Constant.SOFTWARE_NAME + " " + System.currentTimeMillis());
-			email.setContent(mailLine,"text/plain; charset=ISO-2022-JP");
-			email.setCharset("ISO-2022-JP");
-//			try {
-//				email.setMsg(new String(mailLine.getBytes("iso-2022-jp")));
-//			} catch (UnsupportedEncodingException e) {
-//				// TODO 自動生成された catch ブロック
-//				e.printStackTrace();
-//			}
-			email.addTo(mailConf.getDest_mail_adress());
-			email.send();
+	public static void sendMail(MailConf mailConf, String mailLine) throws EmailException {
+		Email email = new SimpleEmail();
+		email.setHostName(mailConf.getSmtp_server());
+		email.setSmtpPort(mailConf.getSmtp_port());
+		email.setAuthenticator(new DefaultAuthenticator(mailConf.getUser_name(), mailConf.getPassword()));
+		email.setSSLOnConnect(mailConf.isSmtp_ssl_flag());
+		email.setFrom(mailConf.getSrc_mail_adress());
+		email.setSubject(Constant.SOFTWARE_NAME + " " + System.currentTimeMillis());
+		email.setContent(mailLine, "text/plain; charset=ISO-2022-JP");
+		email.setCharset("ISO-2022-JP");
+		//			try {
+		//				email.setMsg(new String(mailLine.getBytes("iso-2022-jp")));
+		//			} catch (UnsupportedEncodingException e) {
+		//				// TODO 自動生成された catch ブロック
+		//				e.printStackTrace();
+		//			}
+		email.addTo(mailConf.getDest_mail_adress());
+		email.send();
 	}
-
-
 
 	/**
 	 * メインクラスに渡された引数を解釈して変数に格納します。

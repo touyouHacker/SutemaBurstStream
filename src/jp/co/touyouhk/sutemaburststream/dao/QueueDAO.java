@@ -13,8 +13,6 @@ import jp.co.touyouhk.util.UniversalUtil;
 
 public class QueueDAO {
 
-	private String sqliteFileName = "sutemaBurstStream_Queue.sqlite";
-
 	private String queueTableHeader = "queue_";
 	private String tableName;
 	private Connection con = null;
@@ -22,7 +20,21 @@ public class QueueDAO {
 	public QueueDAO(String itaName) {
 		// create a database connection
 		try {
-			con = DriverManager.getConnection("jdbc:sqlite:" + sqliteFileName);
+			con = DriverManager.getConnection("jdbc:sqlite:" + "sutemaBurstStream_Queue.sqlite");
+
+			tableName = queueTableHeader + itaName;
+
+			tableCheck();
+		} catch (SQLException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
+
+	public QueueDAO(String itaName, String inputSqliteFileName) {
+		// create a database connection
+		try {
+			con = DriverManager.getConnection("jdbc:sqlite:" + inputSqliteFileName);
 
 			tableName = queueTableHeader + itaName;
 
