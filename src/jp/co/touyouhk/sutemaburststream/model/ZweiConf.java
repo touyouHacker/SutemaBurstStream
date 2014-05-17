@@ -5,7 +5,6 @@ import java.util.List;
 public class ZweiConf {
 
 	private String itaName;
-	private String url;
 	private List <String> keyWords;
 
 	public ZweiConf() {
