@@ -16,12 +16,7 @@ public class ZweiConf {
 	public void setItaName(String itaName) {
 		this.itaName = itaName;
 	}
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
+
 	public List<String> getKeyWords() {
 		return keyWords;
 	}

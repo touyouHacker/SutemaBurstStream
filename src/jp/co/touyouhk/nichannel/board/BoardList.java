@@ -1,6 +1,8 @@
 package jp.co.touyouhk.nichannel.board;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 
 import jp.co.touyouhk.util.UniversalUtil;
@@ -26,11 +28,13 @@ public class BoardList {
 	 * 2chのbbsmenuから板の和名とURLのハッシュを作成します
 	 * @param url 例:http://www2.2ch.net/bbsmenu.html
 	 */
-	private HashMap<String, String> getList(String url) throws IOException {
+	private HashMap<String, String> getList(String bbsUrl) throws IOException {
 
 		HashMap<String, String> boradMap = new HashMap<String, String>();
 
-		Document doc = Jsoup.connect(url).get();
+
+		URL url = new URL(bbsUrl);
+		Document doc = Jsoup.parse((InputStream)url.getContent(), "SJIS", url.getHost() + url.getPath());
 		Elements links = doc.getElementsByTag("a");
 		for (Element link : links) {
 			String linkHref = link.attr("href");
@@ -40,10 +44,9 @@ public class BoardList {
 				continue;
 			}
 
+			// System.out.println(linkText + " " + linkHref);
 
-			String boardName = new String(linkText.getBytes("Shift_JIS"), "UTF-8");
-
-			boradMap.put(boardName, linkHref);
+			boradMap.put(linkText, linkHref);
 
 		}
 

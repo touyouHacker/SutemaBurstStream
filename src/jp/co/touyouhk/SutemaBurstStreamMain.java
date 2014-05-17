@@ -37,7 +37,7 @@ public class SutemaBurstStreamMain {
 	public static final String subjectTextDirectory = "subjectText";
 
 	// TODO 設定ファイルに記述
-	private static String boardMenuUrl = "http://www2.2ch.net/bbsmenu.html";
+	private static String boardMenuUrl = "http://menu.2ch.net/bbsmenu.html";
 
 	//JSON
 	//http://gihyo.jp/dev/serial/01/engineer_toolbox/0028
@@ -91,6 +91,7 @@ public class SutemaBurstStreamMain {
 		//System.exit(0);
 
 		String mailLine = "";
+
 		while (true) {
 			loopConter++;
 			System.out.println("------------ ループ " + loopConter + "回目");
@@ -98,11 +99,11 @@ public class SutemaBurstStreamMain {
 			// 板一覧を更新
 			BoardList boardList = new BoardList(boardMenuUrl);
 
-			String url_ = boardList.getUrl("アニメ");
-
-
 			for (ZweiConf zweiConf : zweiConfList) {
-				String result = execute(zweiConf);
+
+				System.out.println(zweiConf.getItaName());
+
+				String result = execute(boardList.getUrl(zweiConf.getItaName()) ,zweiConf);
 				if (result != "" && result != null) {
 					mailLine += result;
 				}
@@ -135,20 +136,20 @@ public class SutemaBurstStreamMain {
 
 	}
 
-	public static String execute(ZweiConf zweiConf) throws UnsupportedEncodingException {
+	public static String execute(String url, ZweiConf zweiConf) throws UnsupportedEncodingException {
 
 		String mailString = "";
 
 		// TODO 毎回チェックするのは無駄なので処理をかえる
 		// ■subject.txt保存フォルダの生成
-		String saveFolder = saveFolderCreate(zweiConf.getUrl());
+		String saveFolder = saveFolderCreate(url);
 		if (saveFolder == null) {
 			//失敗ならアプリを終了
 			System.exit(-1);
 		}
 
 		// ■subjectTextダウンロード
-		String subjectFileNameFullPath = SubjectTextUtil.download(zweiConf.getUrl(),
+		String subjectFileNameFullPath = SubjectTextUtil.download(url,
 				saveFolder);
 
 		if (subjectFileNameFullPath == null) {
@@ -156,7 +157,7 @@ public class SutemaBurstStreamMain {
 			return null;
 		}
 
-		QueueDAO dao = new QueueDAO(Util.boardUrl2EnglishName(zweiConf.getUrl()));
+		QueueDAO dao = new QueueDAO(Util.boardUrl2EnglishName(url));
 
 		// ■subjectTextのモデルの作成
 		List<SubjectTextEntity> subjectTextEntities = SubjectTextUtil
@@ -301,15 +302,9 @@ public class SutemaBurstStreamMain {
 			String itaNodeField = itaField.next();
 			zweiConf.setItaName(itaNodeField);
 
-			//System.out.println("    " + itaNodeField + ": " + rootNode.get(itaNodeField));
-
-			//JsonNode current = rootNode.get(itaNodeField);
-
-			JsonNode url = rootNode.get(itaNodeField).get("url");
-			zweiConf.setUrl(url.getTextValue());
 
 			JsonNode keywords = rootNode.get(itaNodeField).get("keywords");
-			System.out.println(url.getTextValue());
+
 
 			Iterator<JsonNode> keywordList = keywords.getElements();
 
