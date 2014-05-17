@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import jp.co.touyouhk.nichannel.Util;
+import jp.co.touyouhk.nichannel.board.BoardList;
 import jp.co.touyouhk.nichannel.subjecttext.SubjectTextEntity;
 import jp.co.touyouhk.nichannel.subjecttext.SubjectTextUtil;
 import jp.co.touyouhk.sutemaburststream.Constant;
@@ -34,6 +35,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 public class SutemaBurstStreamMain {
 
 	public static final String subjectTextDirectory = "subjectText";
+
+	// TODO 設定ファイルに記述
+	private static String boardMenuUrl = "http://www2.2ch.net/bbsmenu.html";
 
 	//JSON
 	//http://gihyo.jp/dev/serial/01/engineer_toolbox/0028
@@ -83,12 +87,19 @@ public class SutemaBurstStreamMain {
 		JsonNode sbsNode = mapper.readValue(new File(sbsConfFileName), JsonNode.class);
 		MailConf mailConf = parseSbsConf(sbsNode);
 
+
 		//System.exit(0);
 
 		String mailLine = "";
 		while (true) {
 			loopConter++;
 			System.out.println("------------ ループ " + loopConter + "回目");
+
+			// 板一覧を更新
+			BoardList boardList = new BoardList(boardMenuUrl);
+
+			String url_ = boardList.getUrl("アニメ");
+
 
 			for (ZweiConf zweiConf : zweiConfList) {
 				String result = execute(zweiConf);
