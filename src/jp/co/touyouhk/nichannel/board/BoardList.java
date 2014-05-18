@@ -1,9 +1,9 @@
 package jp.co.touyouhk.nichannel.board;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -28,13 +28,13 @@ public class BoardList {
 	public BoardList(String bbsUrl) throws IOException {
 		URL url = new URL(bbsUrl);
 
-		InputStream bbsMenuHtml = (InputStream) url.getContent();
+		String bbsMenuHtmlString = IOUtils.toString(url, "SJIS");
 
-		Document doc = Jsoup.parse(bbsMenuHtml, "SJIS", url.getHost() + url.getPath());
+		Document doc = Jsoup.parseBodyFragment(bbsMenuHtmlString);
 
 		boardMap = createBoradMap(doc);
 		categoryList = createCategoryList(doc);
-		categoryMap = createCategoryMap(bbsMenuHtml);
+		categoryMap = createCategoryMap(bbsMenuHtmlString);
 	}
 
 	/*
@@ -73,13 +73,32 @@ public class BoardList {
 		return categoryList;
 	}
 
-	private HashMap<String, List<String>> createCategoryMap(InputStream bbsMenuHtml) throws IOException {
+	private HashMap<String, List<String>> createCategoryMap(String bbsMenuHtmlString) throws IOException {
 		HashMap<String, List<String>> categoryMap = new HashMap<String, List<String>>();
 
-		String bbsMenuHtmlString = IOUtils.toString(bbsMenuHtml);
-		//空行で文字列の配列に変換
-		//カテゴリごとに処理
-		String [] categoryGroup = bbsMenuHtmlString.split("/^\n/");
+
+		String [] categoryGroupStrings = bbsMenuHtmlString.split("(?m)\n$");
+		List<String> categoryGroupList = Arrays.asList(categoryGroupStrings);
+
+
+		for (String categoryGroup: categoryGroupList) {
+			Document doc = Jsoup.parseBodyFragment(categoryGroup);
+			if (doc.getElementsByTag("b").size() == 0) {
+				continue;
+			}
+
+			String categoryName = doc.getElementsByTag("b").get(0).text();
+			List<String> itaNames = new ArrayList<>();
+			Elements links = doc.getElementsByTag("a");
+			for (Element link : links) {
+				if (StringUtil.isBlank(link.text())) {
+					continue;
+				}
+				itaNames.add(link.text());
+			}
+
+			categoryMap.put(categoryName, itaNames);
+		}
 
 		return categoryMap;
 	}
