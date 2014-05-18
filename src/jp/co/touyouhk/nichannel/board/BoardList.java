@@ -3,11 +3,13 @@ package jp.co.touyouhk.nichannel.board;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import jp.co.touyouhk.util.UniversalUtil;
-
+import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.helper.StringUtil;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -20,31 +22,37 @@ public class BoardList {
 
 	private HashMap<String, String> boardMap;
 
-	public BoardList(String url) throws IOException {
-		boardMap = getList(url);
+	private List<String> categoryList = new ArrayList<String>();
+	private HashMap<String, List<String>> categoryMap;
+
+	public BoardList(String bbsUrl) throws IOException {
+		URL url = new URL(bbsUrl);
+
+		InputStream bbsMenuHtml = (InputStream) url.getContent();
+
+		Document doc = Jsoup.parse(bbsMenuHtml, "SJIS", url.getHost() + url.getPath());
+
+		boardMap = createBoradMap(doc);
+		categoryList = createCategoryList(doc);
+		categoryMap = createCategoryMap(bbsMenuHtml);
 	}
 
 	/*
 	 * 2chのbbsmenuから板の和名とURLのハッシュを作成します
 	 * @param url 例:http://www2.2ch.net/bbsmenu.html
 	 */
-	private HashMap<String, String> getList(String bbsUrl) throws IOException {
+	private HashMap<String, String> createBoradMap(Document doc) throws IOException {
 
 		HashMap<String, String> boradMap = new HashMap<String, String>();
 
-
-		URL url = new URL(bbsUrl);
-		Document doc = Jsoup.parse((InputStream)url.getContent(), "SJIS", url.getHost() + url.getPath());
 		Elements links = doc.getElementsByTag("a");
 		for (Element link : links) {
 			String linkHref = link.attr("href");
 			String linkText = link.text();
 
-			if (UniversalUtil.isBlank(linkHref) || UniversalUtil.isBlank(linkText)) {
+			if (StringUtil.isBlank(linkHref) || StringUtil.isBlank(linkText)) {
 				continue;
 			}
-
-			// System.out.println(linkText + " " + linkHref);
 
 			boradMap.put(linkText, linkHref);
 
@@ -54,8 +62,30 @@ public class BoardList {
 
 	}
 
+	private List<String> createCategoryList(Document doc) {
+		List<String> categoryList = new ArrayList<String>();
+
+		Elements categories = doc.getElementsByTag("b");
+		for (Element category : categories) {
+			categoryList.add(category.text());
+		}
+
+		return categoryList;
+	}
+
+	private HashMap<String, List<String>> createCategoryMap(InputStream bbsMenuHtml) throws IOException {
+		HashMap<String, List<String>> categoryMap = new HashMap<String, List<String>>();
+
+		String bbsMenuHtmlString = IOUtils.toString(bbsMenuHtml);
+		//空行で文字列の配列に変換
+		//カテゴリごとに処理
+		String [] categoryGroup = bbsMenuHtmlString.split("/^\n/");
+
+		return categoryMap;
+	}
+
 	/*
-	 * 板名を和名を元にURLを返却します
+	 * 板名の和名を元にURLを返却します
 	 *
 	 * @param boardName 板名の和名
 	 * @return 板のURL
@@ -64,4 +94,17 @@ public class BoardList {
 		return boardMap.get(boardName);
 	}
 
+	/*
+	 * 板カテゴリ一覧を返します
+	 */
+	public List<String> getCategoryList() {
+		return categoryList;
+	}
+
+	/*
+	 * 板カテゴリを指定し、その子ノードである板一覧をリストで返却します
+	 */
+	public List<String> getCategoryMap(String category) {
+		return categoryMap.get(category);
+	}
 }
